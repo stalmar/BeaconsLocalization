@@ -1,11 +1,16 @@
 library(shiny)
+library(calibrate)
 
 # Definition of constatnt things
 #
 ## environment and beacons definition
 
-room <-rbind(c(0,0), c(0,10), c(20,10), c(20,0))
-midpoints<-rbind((room[1,]+room[2,])/2, (room[2,]+room[3,])/2, (room[3,]+room[4,])/2, (room[4,]+room[1,])/2 )
+# room <-rbind(c(0,0), c(0,10), c(20,10), c(20,0))
+# midpoints<-rbind((room[1,]+room[2,])/2, (room[2,]+room[3,])/2, (room[3,]+room[4,])/2, (room[4,]+room[1,])/2 )
+# beaconsPositions<- rbind(room, midpoints)
+
+room <-rbind(b1= c(0,0), b2 = c(0,10), b3 = c(20,10), b4 = c(20,0))
+midpoints<-rbind(b5= (room[1,]+room[2,])/2, b6 = (room[2,]+room[3,])/2, b7 = (room[3,]+room[4,])/2, b8 = (room[4,]+room[1,])/2 )
 beaconsPositions<- rbind(room, midpoints)
 
 calibration <- -44 # K+P_Tx, measured in dBm at 1 meter
@@ -47,6 +52,11 @@ shinyServer(function(input, output) {
                 split(beaconsAvaliable(), row(beaconsAvaliable()))
         })
         
+#         names(beaconsAvaliableList)<-reactive({
+#                 row.names(beaconsAvaliable())[1:input$beaconsNumber]
+#         }
+#         )
+#         
         # Position of signal receiver
         
         position<-reactive({
@@ -55,9 +65,16 @@ shinyServer(function(input, output) {
         
 # plot position of receiver
         output$pointPosition <- renderPlot({
-                plot(input$xPosition,input$yPosition,xlim= c(0, 20), ylim = c(0, 10), pch = 19, cex = 2 )
+                plot(input$xPosition,input$yPosition,xlim= c(0, 20), ylim = c(0, 10.5), pch = 19, cex = 2, xlab = "x dimension of the room", ylab = "y? dimension of the room")
                points(beaconsAvaliable()[,1],beaconsAvaliable()[,2], pch = 10, cex = 2, col = "red" )
-                })
+               textxy(beaconsAvaliable()[,1],beaconsAvaliable()[,2], labs = row.names(beaconsAvaliable()), cex = 1, m = c(-1, 0)) 
+               })
+# plot names of beacons
+
+output$names<-renderPrint({
+        row.names(beaconsAvaliable())
+        })
+
 
 # show beacons chosen
 
@@ -86,6 +103,10 @@ signalReceived<-reactive({lapply(beaconDistances(), function(x){signalStrength(x
 
 output$signalList <- renderPrint({
         signalReceived()
+})
+
+output$signalPlot <- renderPlot({
+        barplot(as.numeric(signalReceived()), ylim = c(-70, 0), names.arg = row.names(beaconsAvaliable()), main = "Signals received from beacons (RSSI)")
 })
 
 })
