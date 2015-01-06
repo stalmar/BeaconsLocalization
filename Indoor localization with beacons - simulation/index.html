@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Indoor localization with beacons - simulation</title>
+  <meta charset="utf-8">
+  <meta name="description" content="Indoor localization with beacons - simulation">
+  <meta name="author" content="stalmar">
+  <meta name="generator" content="slidify" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/default.css" media="all" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/phone.css" 
+    media="only screen and (max-device-width: 480px)" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/slidify.css" >
+  <link rel="stylesheet" href="libraries/highlighters/highlight.js/css/tomorrow.css" />
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->  <link rel=stylesheet href="./assets/css/ribbons.css"></link>
+
+  
+  <!-- Grab CDN jQuery, fall back to local if offline -->
+  <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
+  <script>window.jQuery || document.write('<script src="libraries/widgets/quiz/js/jquery.js"><\/script>')</script> 
+  <script data-main="libraries/frameworks/io2012/js/slides" 
+    src="libraries/frameworks/io2012/js/require-1.0.8.min.js">
+  </script>
+  
+  
+
+</head>
+<body style="opacity: 0">
+  <slides class="layout-widescreen">
+    
+    <!-- LOGO SLIDE -->
+        <slide class="title-slide segue nobackground">
+  <hgroup class="auto-fadein">
+    <h1>Indoor localization with beacons - simulation</h1>
+    <h2></h2>
+    <p>stalmar<br/></p>
+  </hgroup>
+  <article></article>  
+</slide>
+    
+
+    <!-- SLIDES -->
+    <slide class="" id="slide-1" style="background:;">
+  <hgroup>
+    <h2>Read-And-Delete</h2>
+  </hgroup>
+  <article data-timings="">
+    <ol>
+<li>Edit YAML front matter</li>
+<li>Write using R Markdown</li>
+<li>Use an empty line followed by three dashes to separate slides!</li>
+</ol>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>What are beacons ?</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Beacons are bluetooth low energy transmitters, which can be used for many applications. One of them is indoor navigation/ localization systems, where GPS cannot be used.</p>
+
+<p>Beacons, as useful as they are, have also some shortcomings. Signal emmited by them is unstable and noisy and without any filtering the precision of localization is sometimes. </p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>What aplication is doing ?</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>In predefined room of size 10x20 (meters) one can choose ones (receiver) position (black dot in user interface)and choose how many beacons are present.</p>
+
+<p>According to choices, application reactively simulates strength of signal that would be received in choosen position and plots the signal strength with barplot.</p>
+
+<p>It also uses simulated signal strength to recalulate distances from beacons and estimate the position using min-max method.</p>
+
+<p>The estimation error is computed and displayed with estimated position (red viewfinder).</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Why estimation ?</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>The signal received from beacon is noisy. In application it is assumed that it followes path loss model, as in <a href="http://www.dei.unipd.it/%7Ezanella/PAPER/CR_2008/RealWSN08-CR.pdf">http://www.dei.unipd.it/~zanella/PAPER/CR_2008/RealWSN08-CR.pdf</a>, namely:</p>
+
+<p>\[\P_i = \P_\(T_x)+ K - 10 theta \log_10(d_i/d_0) + \Psi_i + \alpha_i(t)\]</p>
+
+<p>where \(\Psi_i\) and \(\alpha_i(t)\) are random variables and \[P_(T_x)+ K\] is constant, dependend on environment and signal strength calibrated at the beacon.</p>
+
+<p>Becouse of randomness the computation of localization is biased. One can also use many algorithm to estimate this position - application uses min max, as explained in <a href="http://www.consensus.tudelft.nl/documents_papers/compnw.pdf">http://www.consensus.tudelft.nl/documents_papers/compnw.pdf</a>.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Have fun!</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Change the position of receiver, change the position of beacon and see how necessary it is to filter the signal to estimate your position ! :)</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+    <slide class="backdrop"></slide>
+  </slides>
+  <div class="pagination pagination-small" id='io2012-ptoc' style="display:none;">
+    <ul>
+      <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=1 title='Read-And-Delete'>
+         1
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=2 title='What are beacons ?'>
+         2
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=3 title='What aplication is doing ?'>
+         3
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=4 title='Why estimation ?'>
+         4
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=5 title='Have fun!'>
+         5
+      </a>
+    </li>
+  </ul>
+  </div>  <!--[if IE]>
+    <script 
+      src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">  
+    </script>
+    <script>CFInstall.check({mode: 'overlay'});</script>
+  <![endif]-->
+</body>
+  <!-- Load Javascripts for Widgets -->
+  
+  <!-- LOAD HIGHLIGHTER JS FILES -->
+  <script src="libraries/highlighters/highlight.js/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+  <!-- DONE LOADING HIGHLIGHTER JS FILES -->
+   
+  </html>
