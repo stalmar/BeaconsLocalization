@@ -13,13 +13,13 @@ shinyUI(pageWithSidebar(
         sidebarPanel(
                 sliderInput("xPosition", 
                             "Choose your position in the room: x:", 
-                            min = 1,
+                            min = 0,
                             max = 20, 
                             value = 10,
                             step = 0.1),
                 sliderInput("yPosition", 
                             "Choose your position in the room: y:", 
-                            min = 1,
+                            min = 0,
                             max = 10, 
                             value = 5,
                             step = 0.1),
@@ -29,14 +29,6 @@ shinyUI(pageWithSidebar(
         # Show a plot of point's position
         mainPanel(
                 plotOutput("pointPosition"),
-                plotOutput("signalPlot"),
-                verbatimTextOutput("receiver"),
-                tableOutput("beaconsWithDistances"),
-                tableOutput("chosen"),
-                verbatimTextOutput("names"),
-                verbatimTextOutput("chosenList")
-                
-               
-                                                
+                plotOutput("signalPlot")                                        
         )
 ))

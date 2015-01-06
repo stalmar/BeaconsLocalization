@@ -90,16 +90,11 @@ shinyServer(function(input, output) {
         
         minMaxEstimatedReceiver<-reactive({0.5*c(max(b()[,1]- d())+min(b()[,1]+ d()),max(b()[,2]- d())+min(b()[,2]+ d()) )})
         
-        output$receiver <- renderPrint({
-                estimatedReceiver()
+        # compute estimation error
+        
+        estimationError<-reactive({euclideanDist(position(),minMaxEstimatedReceiver())
+                
         })
-        
-        output$beaconsWithDistances <- renderTable({
-                minMaxEstimations()
-        })
-        
-        # estimate position of receiver with mini-max algorithm
-        
         
 # plot positions of receiver and estimated receiver
 
@@ -109,25 +104,9 @@ shinyServer(function(input, output) {
                points(minMaxEstimatedReceiver()[1],minMaxEstimatedReceiver()[2], pch = 10, cex = 2, col = "red" )
                
                textxy(beaconsAvaliable()[,1],beaconsAvaliable()[,2], labs = row.names(beaconsAvaliable()), cex = 1, m = c(-1, 0)) 
+               textxy(minMaxEstimatedReceiver()[1],minMaxEstimatedReceiver()[2], labs = paste("estimation error=" , as.character(round(estimationError(),digits = 2))), cex = 1, m = c(-1, 0)) 
+               
                })
-# plot names of beacons
-
-output$names<-renderPrint({
-        row.names(beaconsAvaliable())
-        })
-
-
-# show beacons chosen
-
-        output$chosen <- renderTable({
-                beaconsAvaliable()
-                })
-
-# show list of beacons chosen
-
-        output$chosenList <- renderPrint({
-                beaconsAvaliableList()
-                })
 
 
 })
