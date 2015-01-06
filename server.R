@@ -1,5 +1,6 @@
 library(shiny)
 library(calibrate)
+library(plyr)
 
 # Definition of constatnt things
 #
@@ -31,12 +32,12 @@ signalStrength <- function (distance, calibration, shadowing, plCoefficient) {
 
 ## localization estimation functions
 
-##....
+distanceEstimation <- function(signal, calibration, plCoefficient) {
+        10^((calibration - signal)/(10*plCoefficient))
+}
 
-# Definition of reactive things
+# Definition of reactive things and server logic in general
 
-
-# Define server logic required to generate and plot a random distribution
 shinyServer(function(input, output) {
         
         # Avaliable beacons 
@@ -52,21 +53,61 @@ shinyServer(function(input, output) {
                 split(beaconsAvaliable(), row(beaconsAvaliable()))
         })
         
-#         names(beaconsAvaliableList)<-reactive({
-#                 row.names(beaconsAvaliable())[1:input$beaconsNumber]
-#         }
-#         )
-#         
         # Position of signal receiver
         
         position<-reactive({
                 c(input$xPosition,input$yPosition)
         })
         
-# plot position of receiver
+        # compute distances from all avaliable beacons
+        
+        beaconDistances<-reactive({lapply(beaconsAvaliableList(), function(x){euclideanDist(x,position())})})
+        
+        # simulate one signal from each avaliable beacons
+        
+        signalReceived<-reactive({lapply(beaconDistances(), function(x){signalStrength(x,calibration = calibration, shadowing = shadowing, plCoefficient = plCoefficient)
+        })})
+        
+        output$signalPlot <- renderPlot({
+                barplot(as.numeric(signalReceived()), ylim = c(-70, 0), names.arg = row.names(beaconsAvaliable()), main = "Signals received from beacons (RSSI)")
+        })
+        
+        # estimate distances from beacons given signal received (inverse to above)
+        
+        distancesEstimated<-reactive({lapply(signalReceived(), function(x){distanceEstimation(x,calibration = calibration, plCoefficient = plCoefficient)
+        })})
+        
+        # Vectorize for easier min-max computations
+        
+        d<-reactive({as.numeric(distancesEstimated())})
+        #dim(distancesVectorized())<-reactive({c()})
+        
+        b<-reactive({beaconsAvaliable()})
+        
+        # minMaxEstimations<-reactive({
+        #         cbind(b(),b()[,1]- d(),b()[,1]+ d(),b()[,2]- d(),b()[,2]+ d())
+        #                 })
+        
+        minMaxEstimatedReceiver<-reactive({0.5*c(max(b()[,1]- d())+min(b()[,1]+ d()),max(b()[,2]- d())+min(b()[,2]+ d()) )})
+        
+        output$receiver <- renderPrint({
+                estimatedReceiver()
+        })
+        
+        output$beaconsWithDistances <- renderTable({
+                minMaxEstimations()
+        })
+        
+        # estimate position of receiver with mini-max algorithm
+        
+        
+# plot positions of receiver and estimated receiver
+
         output$pointPosition <- renderPlot({
-                plot(input$xPosition,input$yPosition,xlim= c(0, 20), ylim = c(0, 10.5), pch = 19, cex = 2, xlab = "x dimension of the room", ylab = "y? dimension of the room")
-               points(beaconsAvaliable()[,1],beaconsAvaliable()[,2], pch = 10, cex = 2, col = "red" )
+                plot(input$xPosition,input$yPosition,xlim= c(0, 20), ylim = c(0, 10.5), pch = 19, cex = 2, xlab = "x dimension of the room", ylab = "y dimension of the room")
+               points(beaconsAvaliable()[,1],beaconsAvaliable()[,2], pch = 22, cex = 2, col = "blue" )
+               points(minMaxEstimatedReceiver()[1],minMaxEstimatedReceiver()[2], pch = 10, cex = 2, col = "red" )
+               
                textxy(beaconsAvaliable()[,1],beaconsAvaliable()[,2], labs = row.names(beaconsAvaliable()), cex = 1, m = c(-1, 0)) 
                })
 # plot names of beacons
@@ -88,25 +129,6 @@ output$names<-renderPrint({
                 beaconsAvaliableList()
                 })
 
-# compute distances from all avaliable beacons
-
-beaconDistances<-reactive({lapply(beaconsAvaliableList(), function(x){euclideanDist(x,position())})})
-
-output$distanceList <- renderPrint({
-        beaconDistances()
-        })
-
-# compute one signal from each avaliable beacons
-
-signalReceived<-reactive({lapply(beaconDistances(), function(x){signalStrength(x,calibration = calibration, shadowing = shadowing, plCoefficient = plCoefficient)
-})})
-
-output$signalList <- renderPrint({
-        signalReceived()
-})
-
-output$signalPlot <- renderPlot({
-        barplot(as.numeric(signalReceived()), ylim = c(-70, 0), names.arg = row.names(beaconsAvaliable()), main = "Signals received from beacons (RSSI)")
-})
 
 })
+

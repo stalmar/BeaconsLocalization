@@ -30,11 +30,12 @@ shinyUI(pageWithSidebar(
         mainPanel(
                 plotOutput("pointPosition"),
                 plotOutput("signalPlot"),
+                verbatimTextOutput("receiver"),
+                tableOutput("beaconsWithDistances"),
                 tableOutput("chosen"),
                 verbatimTextOutput("names"),
-                verbatimTextOutput("chosenList"),
-                verbatimTextOutput("distanceList"),
-                verbatimTextOutput("signalList")
+                verbatimTextOutput("chosenList")
+                
                
                                                 
         )
