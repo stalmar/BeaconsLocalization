@@ -11,14 +11,16 @@ shinyUI(pageWithSidebar(
         
         # Sidebar with a slider input for number of observations
         sidebarPanel(
+                ('Change your position (black dot) in the room and see how your estimated position (red viewfinder) changes. You can also change number of beacons (BLE transmitters) in the room and see how it affects the estimation error. Enjoy!'),
+                (' '),
                 sliderInput("xPosition", 
-                            "Choose your position in the room: x:", 
+                            "Change your position in the room: x:", 
                             min = 0,
                             max = 20, 
                             value = 10,
                             step = 0.1),
                 sliderInput("yPosition", 
-                            "Choose your position in the room: y:", 
+                            "Change your position in the room: y:", 
                             min = 0,
                             max = 10, 
                             value = 5,

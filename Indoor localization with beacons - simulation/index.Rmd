@@ -6,52 +6,72 @@ job         :
 framework   : io2012        # {io2012, html5slides, shower, dzslides, ...}
 highlighter : highlight.js  # {highlight.js, prettify, highlight}
 hitheme     : tomorrow      # 
-widgets     : []            # {mathjax, quiz, bootstrap}
+widgets     : [mathjax]            # {mathjax, quiz, bootstrap}
 mode        : selfcontained # {standalone, draft}
 knit        : slidify::knit2slides
 ---
 
-## Read-And-Delete
-
-1. Edit YAML front matter
-2. Write using R Markdown
-3. Use an empty line followed by three dashes to separate slides!
-
---- .class #id 
 
 ## What are beacons ?
 
 Beacons are bluetooth low energy transmitters, which can be used for many applications. One of them is indoor navigation/ localization systems, where GPS cannot be used.
 
-Beacons, as useful as they are, have also some shortcomings. Signal emmited by them is unstable and noisy and without any filtering the precision of localization is sometimes. 
+Beacons, as useful as they are, have also some shortcomings. Signal emmited by them may be unstable and noisy and without any filtering the precision of localization is not satisfactory. 
+
+In application it is assumed that it followes path loss model, as in work of
+[Zancagio, Zorzifra, Zanella, Zorzi]("http://www.dei.unipd.it/~zanella/PAPER/CR_2008/RealWSN08-CR.pdf")
+
+$$ P_i = P_T  + K - 10 \eta log (d_i) + \Psi_i + \alpha_i(t)$$
+
+
+where $\Psi_i$ and $\alpha_i(t)$ are random variables and $P_T  + K$ is constant, dependend on environment and signal strength calibrated at the beacon. $d_0$, distance used to measure $P_T$ is set to 1 [meter] and ommited in equation above.
 
 --- .class #id 
 
 ## What aplication is doing ?
 
-In predefined room of size 10x20 (meters) one can choose ones (receiver) position (black dot in user interface)and choose how many beacons are present.
+In predefined room of size 10x20 (meters) one can choose ones (receiver) position (black dot in user interface) and choose how many beacons are present.
 
-According to choices, application reactively simulates strength of signal that would be received in choosen position and plots the signal strength with barplot.
+```{r block1, echo =FALSE}
 
-It also uses simulated signal strength to recalulate distances from beacons and estimate the position using min-max method.
+library(calibrate)
 
-The estimation error is computed and displayed with estimated position (red viewfinder).
+room <-rbind(b1= c(0,0), b2 = c(0,10), b3 = c(20,10), b4 = c(20,0))
+midpoints<-rbind(b5= (room[1,]+room[2,])/2, b6 = (room[2,]+room[3,])/2, b7 = (room[3,]+room[4,])/2, b8 = (room[4,]+room[1,])/2 )
+beaconsPositions<- rbind(room, midpoints)
+
+euclideanDist <- function(x1, x2) {sqrt(sum((x1 - x2) ^ 2))}
+
+positionReal<-c(3,8)
+positionEstimated<-c(4,6.8)
+estimationError<-euclideanDist(positionReal,positionEstimated)
+```
+
+```{r block2, echo =FALSE, fig.width = 5, fig.height=4}
+
+plot(3,8,xlim= c(0, 20), ylim = c(0, 10.5), pch = 19, cex = 2, xlab = "x dimension of the room", ylab = "y dimension of the room")
+
+points(beaconsPositions[,1],beaconsPositions[,2], pch = 22, cex = 2, col = "blue" )
+
+points(4, 6.8, pch = 10, cex = 2, col = "red" )
+               
+text(beaconsPositions[,1],beaconsPositions[,2], labels = row.names(beaconsPositions), cex = 1) 
+
+text(4.5, 6.5, labels = paste("estimation error=" , as.character(round(estimationError,digits = 2))), cex = 1) 
+               
+```
+
+According to choices, application reactively simulates strength of signal that would be received in choosen position and displays estimated position (red viewfinder) together with an estimation error.
 
 --- .class #id 
 
-## Why estimation ?
+## What is simulated and what is estimated ?
 
-The signal received from beacon is noisy. In application it is assumed that it followes path loss model, as in http://www.dei.unipd.it/~zanella/PAPER/CR_2008/RealWSN08-CR.pdf, namely:
-
-$$\P_i = \P_\(T_x)+ K - 10 theta \log_10(d_i/d_0) + \Psi_i + \alpha_i(t)$$
-
-where $\Psi_i$ and $\alpha_i(t)$ are random variables and $$P_(T_x)+ K$$ is constant, dependend on environment and signal strength calibrated at the beacon.
-
-Becouse of randomness the computation of localization is biased. One can also use many algorithm to estimate this position - application uses min max, as explained in http://www.consensus.tudelft.nl/documents_papers/compnw.pdf.
+Becouse of randomness the computation of localization is biased. One can also use many algorithm to estimate this position - application uses simulated signal strength to recalulate distances from beacons and estimate the position using min-max method, as explained in work of [Langendoen and Reijers]("http://www.consensus.tudelft.nl/documents_papers/compnw.pdf")"
 
 --- .class #id 
 
 ## Have fun!
 
-Change the position of receiver, change the position of beacon and see how necessary it is to filter the signal to estimate your position ! :)
+Change the position of receiver, change the number of beacons in the room and see how the strength of signal changes (barplot), together with your position ! :)
 
